@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_example/controllers/home_page_controller.dart';
@@ -36,8 +37,47 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  final ScrollController _allPokemonListScrollController = ScrollController();
+
   late HomePageController _homePageController;
   late HomePageData _homePageData;
+
+  @override
+  void initState() {
+    super.initState();
+    _allPokemonListScrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _allPokemonListScrollController.removeListener(_scrollListener);
+    _allPokemonListScrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    ///Ce code vérifie si l'utilisateur a fait défiler une
+    ///liste jusqu'à la fin (c'est-à-dire jusqu'à la position maximale du défilement).
+
+    //_allPokemonListScrollController.offset :
+    //Cette propriété donne la position actuelle du défilement,
+    //c'est-à-dire la distance en pixels parcourue depuis le début de la liste.
+
+    //_allPokemonListScrollController.position.maxScrollExtent :
+    //Cette propriété représente la position maximale jusqu'où l'utilisateur peut défiler.
+    //En d'autres termes, c'est la taille totale du contenu de la liste
+    //moins la taille de la fenêtre de défilement visible.
+
+    //_allPokemonListScrollController.position.outOfRange :
+    //Cette propriété retourne vrai si la position de défilement
+    //est en dehors des limites valides (c'est-à-dire, si elle est avant le début
+    //ou après la fin de la liste).
+    if (_allPokemonListScrollController.offset >=
+            _allPokemonListScrollController.position.maxScrollExtent * 1 &&
+        _allPokemonListScrollController.position.outOfRange) {
+      _homePageController.loadData();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +144,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           SizedBox(
             height: MediaQuery.sizeOf(context).height * 0.60,
             child: ListView.builder(
+              controller: _allPokemonListScrollController,
               //_homePageData.data?.results?.length ?? : egal à null alors return 0
               //sinon _homePageData.data?.results?.length
               itemCount: _homePageData.data?.results?.length ?? 0,
