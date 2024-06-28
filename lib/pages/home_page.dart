@@ -3,30 +3,56 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_example/controllers/home_page_controller.dart';
 import 'package:riverpod_example/models/page_data.dart';
 
+//extends ConsumerStatefulWidget car de base on etait dans un StatefulWidget
+//mais si on veut consume un provider dans un StatelessWidget
+//on utilisera le widget consumer
+
 //StateNotifierProvider a besoin qu'on lui fourni une classe qui extends de StateNotifier
 //StateNotifier a besoin d'un state lors de la construction
 //le state fourni est un state de type HomePageData
 
 //HomePageData est une classe normal
 
+//HomePageControllerProvider est le 1er provider creer
+//HomePageController est le type de state notifier
+//HomePageData est le type de state
+
 //ref: widget reference
-final HomePageControllerProvider = StateNotifierProvider((ref) {
+final HomePageControllerProvider =
+    StateNotifierProvider<HomePageController, HomePageData>((ref) {
   //fonctionne car HomePageController extends de StateNotifier
   //parce que on construct HomePageController on doit donner un state
   //et le state initial vient de HomePageData.initial()
   return HomePageController(HomePageData.initial());
 });
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
+  late HomePageController _homePageController;
+  late HomePageData _homePageData;
+
   @override
   Widget build(BuildContext context) {
+    //Sans ProviderScope on ne peut pas utiliser ces méthodes
+
+    //to read or interact with the providers
+
+    //read methods just read the information for u
+    //mais ne notifie pas lorsque il y a un changement
+    //donc pas de re render le widget
+
+    //watch mm chose sauf qu'il va me notifier et rebuild le widget lors d'un changement
+
+    //notifier return HomePageController instance
+    _homePageController = ref.watch(HomePageControllerProvider.notifier);
+    _homePageData = ref.watch(HomePageControllerProvider);
+
     return Scaffold(
       body: _buildUi(
         context,
