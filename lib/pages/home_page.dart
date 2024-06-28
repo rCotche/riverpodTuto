@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_example/controllers/home_page_controller.dart';
 import 'package:riverpod_example/models/page_data.dart';
+import 'package:riverpod_example/models/pokemon.dart';
+import 'package:riverpod_example/widgets/pokemon_list_tile.dart';
 
 //extends ConsumerStatefulWidget car de base on etait dans un StatefulWidget
 //mais si on veut consume un provider dans un StatelessWidget
@@ -18,7 +20,7 @@ import 'package:riverpod_example/models/page_data.dart';
 //HomePageData est le type de state
 
 //ref: widget reference
-final HomePageControllerProvider =
+final homePageControllerProvider =
     StateNotifierProvider<HomePageController, HomePageData>((ref) {
   //fonctionne car HomePageController extends de StateNotifier
   //parce que on construct HomePageController on doit donner un state
@@ -50,8 +52,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     //watch mm chose sauf qu'il va me notifier et rebuild le widget lors d'un changement
 
     //notifier return HomePageController instance
-    _homePageController = ref.watch(HomePageControllerProvider.notifier);
-    _homePageData = ref.watch(HomePageControllerProvider);
+    _homePageController = ref.watch(homePageControllerProvider.notifier);
+    _homePageData = ref.watch(homePageControllerProvider);
 
     return Scaffold(
       body: _buildUi(
@@ -102,9 +104,12 @@ class _HomePageState extends ConsumerState<HomePage> {
           SizedBox(
             height: MediaQuery.sizeOf(context).height * 0.60,
             child: ListView.builder(
-              itemCount: 0,
+              //_homePageData.data?.results?.length ?? : egal à null alors return 0
+              //sinon _homePageData.data?.results?.length
+              itemCount: _homePageData.data?.results?.length ?? 0,
               itemBuilder: (context, index) {
-                return ListTile();
+                PokemonListResult pokemon = _homePageData.data!.results![index];
+                return PokemonListTile(pokemonUrl: pokemon.url!);
               },
             ),
           )

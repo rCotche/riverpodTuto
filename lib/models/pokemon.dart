@@ -3,7 +3,7 @@
 
 //
 class PokemonListData {
-  int? count; //limit pour le nb de pokemeon we loaded
+  int? count; //nb pokemon au total
   String? next; //next url to fetch the next 20 pokemon
   String? previous; //previous url
   List<PokemonListResult>? results;
