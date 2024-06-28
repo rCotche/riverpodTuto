@@ -54,14 +54,8 @@ class HomePageController extends StateNotifier<HomePageData> {
         // }
       }
     } else {
-      if (kDebugMode) {
-        print("charge la suite");
-      }
       //si il ya un next url
       if (state.data?.next != null) {
-        if (kDebugMode) {
-          print("suivant");
-        }
         //
         Response? res = await _httpService.get(state.data!.next!);
 
@@ -103,10 +97,6 @@ class HomePageController extends StateNotifier<HomePageData> {
               ],
             ),
           );
-
-          if (kDebugMode) {
-            print(data);
-          }
         }
       }
     }
