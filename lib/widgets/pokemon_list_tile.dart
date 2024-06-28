@@ -21,7 +21,7 @@ class PokemonListTile extends ConsumerWidget {
       data: (data) {
         return _tile(context, false, data);
       },
-      error: (error, StackTrace) {
+      error: (error, stackTrace) {
         return Text(
           "Error: $error",
         );
@@ -53,7 +53,7 @@ class PokemonListTile extends ConsumerWidget {
                   pokemon.sprites!.frontDefault!,
                 ),
               )
-            : CircleAvatar(),
+            : const CircleAvatar(),
         title: Text(
           pokemon != null
               ? pokemon.name!.toUpperCase()
@@ -65,7 +65,7 @@ class PokemonListTile extends ConsumerWidget {
         ),
         trailing: IconButton(
           onPressed: () {},
-          icon: Icon(
+          icon: const Icon(
             Icons.favorite_border,
           ),
         ),

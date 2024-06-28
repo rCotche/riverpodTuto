@@ -73,8 +73,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     //est en dehors des limites valides (c'est-à-dire, si elle est avant le début
     //ou après la fin de la liste).
     if (_allPokemonListScrollController.offset >=
-            _allPokemonListScrollController.position.maxScrollExtent * 1 &&
-        _allPokemonListScrollController.position.outOfRange) {
+            _allPokemonListScrollController.position.maxScrollExtent * 0.75 &&
+        !_allPokemonListScrollController.position.outOfRange) {
+      // if (kDebugMode) {
+      //   print("ui");
+      // }
       _homePageController.loadData();
     }
   }

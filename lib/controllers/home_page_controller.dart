@@ -48,46 +48,65 @@ class HomePageController extends StateNotifier<HomePageData> {
 
         //error sans le ? : The property 'results' can't be unconditionally accessed
         //because the receiver can be 'null'.
-        if (kDebugMode) {
-          print(state.data?.results?.first);
-        }
+        // if (kDebugMode) {
+        //   print(state.data?.results?.first);
+        //   print("1er");
+        // }
       }
     } else {
+      if (kDebugMode) {
+        print("charge la suite");
+      }
       //si il ya un next url
       if (state.data?.next != null) {
+        if (kDebugMode) {
+          print("suivant");
+        }
+        //
         Response? res = await _httpService.get(state.data!.next!);
+
+        //
         if (res != null && res.data != null) {
-          PokemonListData data = PokemonListData.fromJson(res.data);
+          PokemonListData data = PokemonListData.fromJson(res.data!);
 
           //method from HomePageData
           state = state.copyWith(
-              //method from PokemonListData
-              data: data.copyWith(results: [
-            //Ce code Dart utilise l'opérateur de propagation (spread operator)
-            //pour combiner des listes en un seul endroit dans une nouvelle liste.
+            //method from PokemonListData
+            data: data.copyWith(
+              results: [
+                //Ce code Dart utilise l'opérateur de propagation (spread operator)
+                //pour combiner des listes en un seul endroit dans une nouvelle liste.
 
-            //...: L'opérateur de propagation.
-            //Il prend une liste et "étale" ses éléments dans une nouvelle liste.
+                //...: L'opérateur de propagation.
+                //Il prend une liste et "étale" ses éléments dans une nouvelle liste.
 
-            //?: L'opérateur de null-aware.
-            //Il permet de propager les éléments d'une liste seulement
-            //si cette liste n'est pas nulle.
-            //Si la liste est nulle, l'opérateur de propagation ne fait rien.
+                //?: L'opérateur de null-aware.
+                //Il permet de propager les éléments d'une liste seulement
+                //si cette liste n'est pas nulle.
+                //Si la liste est nulle, l'opérateur de propagation ne fait rien.
 
-            //Donc, ...?state.data?.results
-            //signifie "si state.data n'est pas nul, et si state.data.results n'est pas nul,
-            //étale les éléments de state.data.results dans la nouvelle liste".
-            //De même pour ...?data.results.
+                //Donc, ...?state.data?.results
+                //signifie "si state.data n'est pas nul, et si state.data.results n'est pas nul,
+                //étale les éléments de state.data.results dans la nouvelle liste".
+                //De même pour ...?data.results.
 
-            //Le code [...?state.data?.results, ...?data.results]
-            //combine les éléments de state.data.results et data.results
-            //dans une nouvelle liste. Si l'une de ces listes est nulle,
-            //elle est simplement ignorée.
+                //Le code [...?state.data?.results, ...?data.results]
+                //combine les éléments de state.data.results et data.results
+                //dans une nouvelle liste. Si l'une de ces listes est nulle,
+                //elle est simplement ignorée.
 
-            //the data we already have
-            ...?state.data?.results,
-            ...?data.results,
-          ]));
+                //the data we already have
+                ...?state.data?.results,
+
+                //new data
+                ...?data.results,
+              ],
+            ),
+          );
+
+          if (kDebugMode) {
+            print(data);
+          }
         }
       }
     }
