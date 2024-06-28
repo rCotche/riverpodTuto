@@ -1,9 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_example/controllers/home_page_controller.dart';
 import 'package:riverpod_example/models/page_data.dart';
 import 'package:riverpod_example/models/pokemon.dart';
+import 'package:riverpod_example/providers/pokemon_data_providers.dart';
+import 'package:riverpod_example/widgets/pokemon_card.dart';
 import 'package:riverpod_example/widgets/pokemon_list_tile.dart';
 
 //extends ConsumerStatefulWidget car de base on etait dans un StatefulWidget
@@ -41,6 +42,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   late HomePageController _homePageController;
   late HomePageData _homePageData;
+
+  late List<String> _favoritePokemons;
 
   @override
   void initState() {
@@ -97,6 +100,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     //notifier return HomePageController instance
     _homePageController = ref.watch(homePageControllerProvider.notifier);
     _homePageData = ref.watch(homePageControllerProvider);
+    _favoritePokemons = ref.watch(favoritePokemonsProvider);
 
     return Scaffold(
       body: _buildUi(
@@ -107,23 +111,77 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   //ui principal
   Widget _buildUi(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Container(
-          //width of the actual device
-          width: MediaQuery.sizeOf(context).width,
-          padding: EdgeInsets.symmetric(
-            horizontal:
-                MediaQuery.sizeOf(context).width * 0.02, //2% du width du device
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _allPokemonsList(context),
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("PokeDex"),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            //width of the actual device
+            width: MediaQuery.sizeOf(context).width,
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.sizeOf(context).width *
+                  0.02, //2% du width du device
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _favoritePokemonsList(context),
+                _allPokemonsList(context),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  //
+  Widget _favoritePokemonsList(BuildContext context) {
+    return SizedBox(
+      width: MediaQuery.sizeOf(context).width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Favorites",
+            style: TextStyle(
+              fontSize: 25,
+            ),
+          ),
+          SizedBox(
+            height: MediaQuery.sizeOf(context).height * 0.50,
+            width: MediaQuery.sizeOf(context).width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (_favoritePokemons.isNotEmpty)
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.48,
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2),
+                      itemCount: _favoritePokemons.length,
+                      itemBuilder: (context, index) {
+                        String pokemonUrl = _favoritePokemons[index];
+                        return PokemonCard(pokemonUrl: pokemonUrl);
+                      },
+                    ),
+                  ),
+                if (_favoritePokemons.isEmpty)
+                  const Text(
+                    "No favorite pokemon yet !",
+                  ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
