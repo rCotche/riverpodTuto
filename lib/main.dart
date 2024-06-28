@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:riverpod_example/pages/home_page.dart';
+import 'package:riverpod_example/services/http_service.dart';
 
-void main() {
+void main() async {
+  //when _setupServices is completed là on va run l'app
+  await _setupServices();
   runApp(const MyApp());
+}
+
+Future<void> _setupServices() async {
+  //register an instance
+  //on va pouvoir y avoir acces avec get_it
+  GetIt.instance.registerSingleton<HttpService>(HttpService());
 }
 
 class MyApp extends StatelessWidget {
