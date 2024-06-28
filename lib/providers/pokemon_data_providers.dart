@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:riverpod_example/models/pokemon.dart';
+import 'package:riverpod_example/services/database_service.dart';
 import 'package:riverpod_example/services/http_service.dart';
 
 //ICI c'est qd on besoin de performing and caching asynchronous operations (such as network requests)
@@ -26,14 +27,36 @@ final pokemonDataProvider =
   return null;
 });
 
-final favoritePokemonsProvider = StateNotifierProvider((ref) {
+final favoritePokemonsProvider =
+    StateNotifierProvider<FavoritePokemonsProvider, List<String>>((ref) {
   return FavoritePokemonsProvider([]);
 });
 
 class FavoritePokemonsProvider extends StateNotifier<List<String>> {
+  //
+  final DatabaseService _databaseService =
+      GetIt.instance.get<DatabaseService>();
+  String FAVORITE_POKEMON_LIST_KEY = "FAVORITE_POKEMON_LIST_KEY";
+  //
   FavoritePokemonsProvider(super._state) {
     _setup();
   }
 
   Future<void> _setup() async {}
+
+  void addFavoritePokemon(String url) {
+    state = [...state, url];
+    _databaseService.saveList(FAVORITE_POKEMON_LIST_KEY, state);
+  }
+
+  void removeFavoritePokemon(String url) {
+    //every element that doesnt pass this test will be included
+    //the other will be excluded
+
+    //chaque element e qui est different de la chaine de caractere url
+    //est inclu dans la liste
+    //url est passé en param
+    state = state.where((e) => e != url).toList();
+    _databaseService.saveList(FAVORITE_POKEMON_LIST_KEY, state);
+  }
 }

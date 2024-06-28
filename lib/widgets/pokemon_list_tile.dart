@@ -6,11 +6,21 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class PokemonListTile extends ConsumerWidget {
   final String pokemonUrl;
-  const PokemonListTile({super.key, required this.pokemonUrl});
+
+  //
+  late FavoritePokemonsProvider _favoritePokemonsProvider;
+  late List<String> _favoritePokemons;
+
+  //
+  PokemonListTile({super.key, required this.pokemonUrl});
 
   @override
   //WidgetRef ref permet de consume le provider pokemonDataProvider
   Widget build(BuildContext context, WidgetRef ref) {
+    //
+    _favoritePokemonsProvider = ref.watch(favoritePokemonsProvider.notifier);
+    _favoritePokemons = ref.watch(favoritePokemonsProvider);
+
     //interact with le provider & rebuil widget when changes
     final pokemon = ref.watch(pokemonDataProvider(pokemonUrl));
 
@@ -64,9 +74,23 @@ class PokemonListTile extends ConsumerWidget {
           "Has ${pokemon?.moves?.length.toString() ?? 0} moves",
         ),
         trailing: IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.favorite_border,
+          onPressed: () {
+            //est ce que la liste de pokemon contient déjà l'url
+            //si oui cela veut dire qu'on doit le supprimer
+            if (_favoritePokemons.contains(pokemonUrl)) {
+              _favoritePokemonsProvider.removeFavoritePokemon(pokemonUrl);
+            }
+
+            //sinon cela veut dire qu-on doit l'ajouter
+            else {
+              _favoritePokemonsProvider.addFavoritePokemon(pokemonUrl);
+            }
+          },
+          icon: Icon(
+            _favoritePokemons.contains(pokemonUrl)
+                ? Icons.favorite
+                : Icons.favorite_border,
+            color: Colors.red,
           ),
         ),
       ),
