@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_example/models/pokemon.dart';
 import 'package:riverpod_example/providers/pokemon_data_providers.dart';
+import 'package:riverpod_example/widgets/pokemon_stats_card.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PokemonListTile extends ConsumerWidget {
@@ -56,41 +57,52 @@ class PokemonListTile extends ConsumerWidget {
       //si c'est true alors show the animation
       //sinon la version "normal" (donnée charger)
       enabled: isLoading,
-      child: ListTile(
-        leading: pokemon != null
-            ? CircleAvatar(
-                backgroundImage: NetworkImage(
-                  pokemon.sprites!.frontDefault!,
-                ),
-              )
-            : const CircleAvatar(),
-        title: Text(
-          pokemon != null
-              ? pokemon.name!.toUpperCase()
-              : "currently loading the name for pokemon.",
-        ),
-        subtitle: Text(
-          //si pokemon?.moves?.length null alors 0
-          "Has ${pokemon?.moves?.length.toString() ?? 0} moves",
-        ),
-        trailing: IconButton(
-          onPressed: () {
-            //est ce que la liste de pokemon contient déjà l'url
-            //si oui cela veut dire qu'on doit le supprimer
-            if (_favoritePokemons.contains(pokemonUrl)) {
-              _favoritePokemonsProvider.removeFavoritePokemon(pokemonUrl);
-            }
+      child: GestureDetector(
+        onTap: () {
+          if (!isLoading) {
+            showDialog(
+                context: context,
+                builder: (_) {
+                  return PokemonStatsCard(pokemonUrl: pokemonUrl);
+                });
+          }
+        },
+        child: ListTile(
+          leading: pokemon != null
+              ? CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    pokemon.sprites!.frontDefault!,
+                  ),
+                )
+              : const CircleAvatar(),
+          title: Text(
+            pokemon != null
+                ? pokemon.name!.toUpperCase()
+                : "currently loading the name for pokemon.",
+          ),
+          subtitle: Text(
+            //si pokemon?.moves?.length null alors 0
+            "Has ${pokemon?.moves?.length.toString() ?? 0} moves",
+          ),
+          trailing: IconButton(
+            onPressed: () {
+              //est ce que la liste de pokemon contient déjà l'url
+              //si oui cela veut dire qu'on doit le supprimer
+              if (_favoritePokemons.contains(pokemonUrl)) {
+                _favoritePokemonsProvider.removeFavoritePokemon(pokemonUrl);
+              }
 
-            //sinon cela veut dire qu-on doit l'ajouter
-            else {
-              _favoritePokemonsProvider.addFavoritePokemon(pokemonUrl);
-            }
-          },
-          icon: Icon(
-            _favoritePokemons.contains(pokemonUrl)
-                ? Icons.favorite
-                : Icons.favorite_border,
-            color: Colors.red,
+              //sinon cela veut dire qu-on doit l'ajouter
+              else {
+                _favoritePokemonsProvider.addFavoritePokemon(pokemonUrl);
+              }
+            },
+            icon: Icon(
+              _favoritePokemons.contains(pokemonUrl)
+                  ? Icons.favorite
+                  : Icons.favorite_border,
+              color: Colors.red,
+            ),
           ),
         ),
       ),
